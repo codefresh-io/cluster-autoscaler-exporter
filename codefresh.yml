@@ -1,0 +1,23 @@
+version: '1.0'
+steps:
+  clone_repo:
+    title: Cloning repository
+    type: git-clone
+    repo: '${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}'
+    revision: '${{CF_REVISION}}'
+    git: cf_github
+  docker_build:
+    title: Building Docker Image
+    type: build
+    image_name: 'codefresh/${{CF_REPO_NAME}}'
+    working_directory: ${{clone_repo}}
+  docker_push:
+    title: Pushing to Docker Registry
+    type: push
+    candidate: '${{docker_build}}'
+    tag: 'latest'
+    registry: dockerhub
+    when:
+      branch:
+        only:
+          - master
